@@ -123,7 +123,7 @@ bool updateIcon(void)
   BMPUPDATE_STAT bmpState;
 
   GUI_Clear(infoSettings.bg_color);
-  GUI_DispString(5, PADDING, (uint8_t *)"Updating Logo");
+  GUI_DispString(5, PADDING, (uint8_t *)"Logó lecserélése");
   GUI_ClearPrect(&iconUpdateRect);
 
   bmpState = bmpDecode(BMP_ROOT_DIR "/Logo.bmp", LOGO_ADDR);
@@ -139,7 +139,7 @@ bool updateIcon(void)
   }
 
   GUI_Clear(infoSettings.bg_color);
-  GUI_DispString(5, PADDING, (uint8_t *)"Updating Icons");
+  GUI_DispString(5, PADDING, (uint8_t *)"Ikonok cseréje");
 
   for (int i = 0; i < COUNT(iconBmpName); i++)
   {
@@ -161,7 +161,7 @@ bool updateIcon(void)
       dispIconFail((uint8_t *)nowBmp, bmpState);
     }
     // Display icon update progress
-    sprintf(tempstr, "Updated: %d | Not Updated: %d", found, notfound);
+    sprintf(tempstr, "Frissitve: %d | Nincs frissitve: %d", found, notfound);
     GUI_DispString(statUpdateRect.x0, statUpdateRect.y0, (uint8_t *)tempstr);
   }
   /*
@@ -200,18 +200,18 @@ void dispIconFail(uint8_t *lbl, BMPUPDATE_STAT bmpState)
   switch (bmpState)
   {
   case BMP_INVALIDFILE:
-    stat_txt = (uint8_t *)("BMP file not valid ");
+    stat_txt = (uint8_t *)("A BMP file hibás! ");
     break;
   case BMP_NOT24BIT:
-    stat_txt = (uint8_t *)("Format is not 24Bit");
+    stat_txt = (uint8_t *)("Nem 24 bites formátum! ");
     break;
   case BMP_NOTFOUND:
   default:
-    stat_txt = (uint8_t *)("BMP file not found ");
+    stat_txt = (uint8_t *)("BMP file nem található ");
     break;
   }
   char error_txt[30];
-  sprintf(error_txt, "Error: %s", stat_txt);
+  sprintf(error_txt, "Hiba: %s", stat_txt);
   GUI_DispString(labelFailedRect.x0, labelFailedRect.y0 + BYTE_HEIGHT + 2, (uint8_t*)error_txt);
   GUI_RestoreColorDefault();
   Delay_ms(1000); // give some time to the user to read failed icon name.
@@ -233,9 +233,9 @@ bool updateFont(char *font, uint32_t addr)
   if (tempbuf == NULL)
     return false;
   GUI_Clear(infoSettings.bg_color);
-  sprintf((void *)buffer,"%s Size: %dKB",font, (u32)f_size(&myfp)>>10);
+  sprintf((void *)buffer,"%s Mérete: %dKB",font, (u32)f_size(&myfp)>>10);
   GUI_DispString(0, 100, (uint8_t*)buffer);
-  GUI_DispString(0, 140, (uint8_t*)"Updating:   %");
+  GUI_DispString(0, 140, (uint8_t*)"Frissités:   %");
 
   while (!f_eof(&myfp))
   {
@@ -261,15 +261,15 @@ static inline void scanResetDir(void)
 {
   if (f_file_exists(TFT_RESET_FILE))
   {
-    if (f_file_exists(TFT_RESET_FILE ".DONE"))
+    if (f_file_exists(TFT_RESET_FILE ".KÉSZ"))
     {
-      f_unlink(TFT_RESET_FILE ".DONE");
+      f_unlink(TFT_RESET_FILE ".KÉSZ");
     }
     infoSettingsReset();
     LCD_RefreshDirection();
     TSC_Calibration();
     storePara();
-    f_rename(TFT_RESET_FILE, TFT_RESET_FILE ".DONE");
+    f_rename(TFT_RESET_FILE, TFT_RESET_FILE ".KÉSZ");
   }
 }
 
@@ -283,7 +283,7 @@ static inline void scanRenameUpdate(void)
     { // old ROOT_DIR also exists
       GUI_Clear(infoSettings.bg_color);
       // It will take some time to delete the old ROOT_DIR, so display "Deleting" on the screen to tell user.
-      GUI_DispStringInRect(0, 0, LCD_WIDTH, LCD_HEIGHT, (uint8_t *)"Deleting old ROOT_DIR...");
+      GUI_DispStringInRect(0, 0, LCD_WIDTH, LCD_HEIGHT, (uint8_t *)"Root törlése...");
       f_remove_full_dir(ROOT_DIR ".CUR");
     }
     f_rename(ROOT_DIR, ROOT_DIR ".CUR");
