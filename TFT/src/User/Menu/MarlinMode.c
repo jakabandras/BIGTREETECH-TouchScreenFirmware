@@ -29,12 +29,16 @@ void menuMarlinMode(void)
   }
 
   #if defined(ST7920_EMULATOR)
+    ST7920 st7920;
+
     if (infoSettings.marlin_type == LCD12864)
     {
       marlinInit = SPI_Slave;
       marlinDeInit = SPI_SlaveDeInit;
       marlinGetData = SPI_SlaveGetData;
       marlinParse = ST7920_ParseRecv;
+
+      ST7920_Init(&st7920);
     }
   #endif
 
@@ -69,18 +73,22 @@ void menuMarlinMode(void)
 
     loopCheckMode();
 
-    #if defined(SCREEN_SHOT_TO_SD)
-      loopScreenShot();
-    #endif
-
-    #ifdef LCD_LED_PWM_CHANNEL
-      loopDimTimer();
-    #endif
-
     if (infoSettings.serial_alwaysOn == ENABLED)
     {
       loopBackEnd();
     }
+    #if defined(SCREEN_SHOT_TO_SD) || defined(LCD_LED_PWM_CHANNEL)  // loopScreenShot() and LCD_HandleDimming() are invoked by loopBackEnd(),
+      else                                                          // so we guarantee they are invoked only once
+      {
+        #ifdef SCREEN_SHOT_TO_SD
+          loopScreenShot();
+        #endif
+
+        #ifdef LCD_LED_PWM_CHANNEL
+          LCD_HandleDimming();
+        #endif
+      }
+    #endif
   }
 
   marlinDeInit();
